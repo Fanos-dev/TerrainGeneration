@@ -8,6 +8,10 @@ public class TerrainGenerator : MonoBehaviour
     //Terrain size
     public int sizeX = 1;
     public int sizeZ = 1;
+
+    //Control detail of terrain
+    public float amplitude = 5f;
+    public float frequency = 0.1f;
     
     //Terrain components
     private List<Vector3> vertices;
@@ -35,11 +39,15 @@ public class TerrainGenerator : MonoBehaviour
         triangles = new List<int>(sizeX * sizeZ * 6);
         
         //Create vertices
-        for (int i = 0; i <= sizeX; i++)
+        for (int x = 0; x <= sizeX; x++)
         {
-            for (int j = 0; j <= sizeZ; j++)
+            for (int z = 0; z <= sizeZ; z++)
             {
-                vertices.Add(new Vector3(i, 0, j));
+                //Write custom perlin noise
+                float y = (Mathf.PerlinNoise(x * 1.3f * frequency, z * 1.3f * frequency ) * 1f * amplitude) +
+                          (Mathf.PerlinNoise(x * 2.5f * frequency, z * 2.5f * frequency) * 0.5f * amplitude) +
+                          (Mathf.PerlinNoise(x * 4.9f * frequency, z * 4.9f * frequency) * 0.25f * amplitude);
+                vertices.Add(new Vector3(x, y, z));
             }
         }
 
@@ -77,16 +85,16 @@ public class TerrainGenerator : MonoBehaviour
         terrain.RecalculateNormals();
     }
 
-    private void OnDrawGizmos()
-    {
-        if (vertices == null)
-        {
-            return;
-        }
-        
-        foreach (var t in vertices)
-        {
-            Gizmos.DrawSphere(t, .1f);
-        }
-    }
+    // private void OnDrawGizmos()
+    // {
+    //     if (vertices == null)
+    //     {
+    //         return;
+    //     }
+    //     
+    //     foreach (var t in vertices)
+    //     {
+    //         Gizmos.DrawSphere(t, .1f);
+    //     }
+    // }
 }

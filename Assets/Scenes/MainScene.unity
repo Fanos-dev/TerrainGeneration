@@ -236,7 +236,7 @@ MonoBehaviour:
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
-  m_Antialiasing: 1
+  m_Antialiasing: 2
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
@@ -459,6 +459,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sizeX: 50
   sizeZ: 50
+  amplitude: 8
+  frequency: 0.07
 --- !u!23 &1863107944
 MeshRenderer:
   m_ObjectHideFlags: 0
