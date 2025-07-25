@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 //Make sure mesh filter exists when adding script to game object 
-[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class TerrainGenerator : MonoBehaviour
 {
     //Terrain size
@@ -18,23 +19,29 @@ public class TerrainGenerator : MonoBehaviour
     private List<int> triangles;
 
     private Mesh terrain;
+
+    private bool init;
     
     void Start()
     {
-        terrain = new Mesh
-        {
-            name = "TerrainMesh"
-        };
-
-        GetComponent<MeshFilter>().mesh = terrain;
-
-        CreateTerrain();
-
-        UpdateTerrain();
+        GenerateTerrain();
     }
 
-    void CreateTerrain()
+    public void GenerateTerrain()
     {
+        if (!init)
+        {
+            terrain = new Mesh
+            {
+                name = "TerrainMesh",
+                indexFormat = IndexFormat.UInt32
+            };
+
+            GetComponent<MeshFilter>().mesh = terrain;
+
+            init = true;
+        }
+        
         vertices = new List<Vector3>((sizeX + 1) * (sizeZ + 1));
         triangles = new List<int>(sizeX * sizeZ * 6);
         
@@ -44,9 +51,7 @@ public class TerrainGenerator : MonoBehaviour
             for (int z = 0; z <= sizeZ; z++)
             {
                 //Write custom perlin noise
-                float y = (Mathf.PerlinNoise(x * 1.3f * frequency, z * 1.3f * frequency ) * 1f * amplitude) +
-                          (Mathf.PerlinNoise(x * 2.5f * frequency, z * 2.5f * frequency) * 0.5f * amplitude) +
-                          (Mathf.PerlinNoise(x * 4.9f * frequency, z * 4.9f * frequency) * 0.25f * amplitude);
+                float y = (Mathf.PerlinNoise(x * 1.3f * frequency, z * 1.3f * frequency ) * 1f * amplitude);
                 vertices.Add(new Vector3(x, y, z));
             }
         }
@@ -73,10 +78,8 @@ public class TerrainGenerator : MonoBehaviour
                 triangles.Add(bottomRight);
             }
         }
-    }
-
-    void UpdateTerrain()
-    {
+        
+        //Setup terrain
         terrain.Clear();
 
         terrain.vertices = vertices.ToArray();
